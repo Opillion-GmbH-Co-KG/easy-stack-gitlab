@@ -1,0 +1,15 @@
+check-gitlab:
+	$(OUTPUT)$(GITLAB_EXECUTE) -c "/script/check_gitlab.sh"
+
+gitlab-admin:
+	$(OUTPUT)$(GITLAB_EXECUTE) -c "/script/create_admin_user.sh"
+
+# dev only
+clean-gitlab:
+	@echo -n "Are you sure, this will drop your dev gitlab volumes? [y/n] " && read ans && if [ $${ans:-'n'} = 'y' ]; then make --ignore-errors clean-gitlab-callback; fi
+
+clean-gitlab-callback:
+	$(OUTPUT) sudo rm ./.docker/dev/gitlab/config -R
+	$(OUTPUT) sudo rm ./.docker/dev/gitlab/data -R
+	$(OUTPUT) sudo rm ./.docker/dev/gitlab/logs -R
+	$(OUTPUT) ls ./.docker/dev/gitlab -lsa

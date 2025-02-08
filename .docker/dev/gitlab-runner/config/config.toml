@@ -1,0 +1,21 @@
+concurrent = 5 
+
+[[runners]]
+  name = "gitlab-runner-1"
+  url = "http://gitlab.local:8087"
+  token = "YOUR_TOKEN_1"
+  executor = "docker"
+  [runners.custom_build_dir]
+  [runners.docker]
+    tls_verify = false
+    image = "alpine:latest"
+    privileged = true
+    disable_entrypoint_overwrite = false
+    oom_kill_disable = false
+    disable_cache = false
+    volumes = ["/cache"]
+    shm_size = 0
+  [runners.cache]
+    path = "/cache"
+  environment = ["DOCKER_DRIVER=overlay2"]
+  tags = ["docker", "alpine"]

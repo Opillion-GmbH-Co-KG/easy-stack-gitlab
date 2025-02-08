@@ -1,0 +1,5 @@
+.idea
+.env
+/.docker/dev/gitlab/config/
+/.docker/dev/gitlab/data/
+/.docker/dev/gitlab/logs/

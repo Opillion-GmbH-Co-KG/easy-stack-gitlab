@@ -1,0 +1,106 @@
+services:
+
+  gitlab:
+    build:
+      context: .docker/${DOCKER_IMAGE_SOURCE}/
+      dockerfile: gitlab.Dockerfile
+      args:
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
+        DEV_IMAGE_TAG: ${DEV_IMAGE_TAG}
+        PROD_IMAGE_TAG: ${PROD_IMAGE_TAG}
+    hostname: 'gitlab.local'
+    ports:
+      - "${GITLAB_EXTERNAL_PORT}:${GITLAB_INTERNAL_PORT}" # "8087:8087"
+      - "${GITLAB_HTTPS_EXTERNAL_PORT}:${GITLAB_HTTPS_INTERNAL_PORT}" # "8443:443"
+      - "${GITLAB_SSH_EXTERNAL_PORT}:${GITLAB_SSH_INTERNAL_PORT}" # "2224:22"
+    environment:
+      GITLAB_HOST: ${GITLAB_HOST}
+      GITLAB_USERNAME: ${GITLAB_USERNAME}
+      GITLAB_EMAIL: ${GITLAB_EMAIL}
+      GITLAB_NAME: ${GITLAB_NAME}
+      GITLAB_PASSWORD: ${GITLAB_PASSWORD}
+      GITLAB_PROJECTS_LIMIT: ${GITLAB_PROJECTS_LIMIT}
+      SKIP_POST_DEPLOYMENT_MIGRATIONS: ${SKIP_POST_DEPLOYMENT_MIGRATIONS}
+      SKIP_MIGRATIONS: ${SKIP_MIGRATIONS}
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url '${GITLAB_HOST}'
+        nginx['listen_port'] = ${GITLAB_INTERNAL_PORT}
+        nginx['listen_https'] = false
+
+        ##### configure your Mail settings #####
+        # gitlab_rails['gitlab_shell_ssh_port'] = ${GITLAB_SSH_INTERNAL_PORT}
+        # gitlab_rails['smtp_enable'] = true
+        # gitlab_rails['smtp_address'] = "${SMTP_ADDRESS}"
+        # gitlab_rails['smtp_port'] = ${SMTP_PORT}
+        # gitlab_rails['smtp_user_name'] = "${SMTP_USER_NAME}"
+        # gitlab_rails['smtp_password'] = "${SMTP_PASSWORD}"
+        # gitlab_rails['smtp_domain'] = "${SMTP_DOMAIN}"
+        # gitlab_rails['smtp_authentication'] = "${SMTP_AUTHENTICATION}"
+        # gitlab_rails['smtp_enable_starttls_auto'] = ${SMTP_ENABLE_STARTTLS_AUTO}
+        # gitlab_rails['smtp_tls'] = ${SMTP_TLS}
+        # gitlab_rails['smtp_openssl_verify_mode'] = "${SMTP_OPENSSL_VERIFY_MODE}"
+    volumes:
+      - ${GITLAB_CONFIG_FILE}:/etc/gitlab/gitlab.rb:ro
+      - ${GITLAB_CONFIG_VOLUME:-gitlab-config-data}:/etc/gitlab
+      - ${GITLAB_LOGS_VOLUME:-gitlab-logs-data}:/var/log/gitlab
+      - ${GITLAB_DATA_VOLUME:-gitlab-data-data}:/var/opt/gitlab
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    entrypoint: ["/bin/bash", "-c", "/assets/wrapper && gitlab-ctl reconfigure && exec gitlab-ctl runit-wrapper"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f ${GITLAB_HOST} || exit 1"]
+      interval: 1m
+      timeout: 10s
+      retries: 5
+      start_period: 3m
+    networks:
+      - default
+
+
+  gitlab-runner:
+    build:
+      context: .docker/${DOCKER_IMAGE_SOURCE}/
+      dockerfile: gitlab.Dockerfile
+      args:
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
+        DEV_IMAGE_TAG: ${DEV_IMAGE_TAG}
+        PROD_IMAGE_TAG: ${PROD_IMAGE_TAG}
+    environment:
+      - RUNNER_NAME=${RUNNER_NAME}
+      - REGISTER_NON_INTERACTIVE=${REGISTER_NON_INTERACTIVE}
+      - REGISTER_LOCKED=${REGISTER_LOCKED}
+      - REGISTER_TAG_LIST=${REGISTER_TAG_LIST}
+      - RUNNER_EXECUTOR=${RUNNER_EXECUTOR}
+      - CI_SERVER_URL=${CI_SERVER_URL}
+      - REGISTRATION_TOKEN=${REGISTRATION_TOKEN}
+      - DOCKER_IMAGE_GITLAB_RUNNER=${DOCKER_IMAGE_GITLAB_RUNNER}
+      - DOCKER_PRIVILEGED=${DOCKER_PRIVILEGED}
+    volumes:
+      - ${GITLAB_RUNNER_VOLUME:-gitlab-runner-data}:/etc/gitlab-runner
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    restart: unless-stopped
+    depends_on:
+      gitlab:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "gitlab-runner verify || exit 1"]
+      interval: 1m
+      timeout: 10s
+      retries: 5
+      start_period: 2m
+    networks:
+      - default
+
+
+volumes:
+  gitlab-config-data:
+  gitlab-logs-data:
+  gitlab-data-data:
+  gitlab-runner-data:
+
+networks:
+  default:
+    name: ${DOCKER_NETWORK}
+    driver: bridge
