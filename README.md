@@ -59,7 +59,7 @@ make restart
 
 #### The stack up and running:
 
-# Docker Compose Setup for Easy Stack
+# Docker Compose Setup 
 
 This project provides a setup for various services within a Docker Compose environment. The services are pre-configured and use environment variables defined in a `.env` file.
 
