@@ -107,6 +107,15 @@ This project provides a setup for various services within a Docker Compose envir
    - `/etc/timezone:/etc/timezone:ro`
 - **Depends On:** GitLab service, with health-check condition.
 
+## License Information
+
+| Container           | License               | License Link                                                         |
+|---------------------|-----------------------|----------------------------------------------------------------------|
+| **GitLab**          | MIT / EE Proprietary  | [GitLab License](https://gitlab.com/gitlab-org/gitlab)               |
+| **GitLab Runner**   | MIT                   | [GitLab Runner License](https://gitlab.com/gitlab-org/gitlab-runner) |
+| **Easy-Stack**      | GPL-3.0               | [GPL-3.0](https://www.gnu.org/licenses/gpl-3.0.html)                 |
+
+
 
 ## This Stack is based on Easy Stack Mini
 
