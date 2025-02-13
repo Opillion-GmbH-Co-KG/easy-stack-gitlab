@@ -7,7 +7,20 @@
 This application is a versatile and comprehensive solution that provides a framework for various Docker containers. It can include different types of services, such as backends in Java or PHP, any kind of frontend, or even a complete Docker stack. Modify it to suit your needs. Check out our upcoming Easy-Stacks soon.
 With this simple stack, you can build your own Docker images and publish them either locally or through GitHub pipelines. For your own Docker containers, you will need a registry such as Docker Hub or a similar option, like GitHub's container registry.
 
-#### Caution! Caution! This stack is intended for development use only and is not configured for production. Please make sure to change all passwords immediately. You can override the values from the .env.dist file with a custom .env file. For production use, please refer to the "Easy-Stack-Prod" stack - comming soon.
+#### Caution! Caution! This stack is intended for development use only and is not configured for production. For production use, please refer to the "Easy-Stack-Prod" stack - comming soon.
+
+## Important Notice
+
+We strongly recommend changing all passwords in the `.env.dist` file. These are purely test data and should not be used even in development mode.
+
+### How to Update Environment Variables
+
+1. Create a `.env` file next to `.env.dist`:
+   ```sh
+   cp .env.dist .env
+   ```
+2. Open the `.env` file and update the relevant values.
+3. The `.env` file will be automatically loaded if it exists and will override the corresponding environment variables.
 
 ## Installation and Starting the Application
 To install and start the application, follow these steps:
@@ -46,7 +59,7 @@ make restart
 
 #### The stack up and running:
 
-# Docker Compose Setup for Easy Stack
+# Docker Compose Setup 
 
 This project provides a setup for various services within a Docker Compose environment. The services are pre-configured and use environment variables defined in a `.env` file.
 
@@ -93,6 +106,15 @@ This project provides a setup for various services within a Docker Compose envir
    - `/etc/localtime:/etc/localtime:ro`
    - `/etc/timezone:/etc/timezone:ro`
 - **Depends On:** GitLab service, with health-check condition.
+
+## License Information
+
+| Container           | License               | License Link                                                         |
+|---------------------|-----------------------|----------------------------------------------------------------------|
+| **GitLab**          | MIT / EE Proprietary  | [GitLab License](https://gitlab.com/gitlab-org/gitlab)               |
+| **GitLab Runner**   | MIT                   | [GitLab Runner License](https://gitlab.com/gitlab-org/gitlab-runner) |
+| **Easy-Stack**      | GPL-3.0               | [GPL-3.0](https://www.gnu.org/licenses/gpl-3.0.html)                 |
+
 
 
 ## This Stack is based on Easy Stack Mini
