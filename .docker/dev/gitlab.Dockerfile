@@ -5,6 +5,6 @@ FROM ${DOCKER_REPO_NAME}/gitlab:${BASE_IMAGE_TAG}
 RUN apk add --no-cache qemu-user-static
 
 ADD .docker/dev/gitlab/script /script
-RUN /bin/busybox chmod -R 755 /script
+
 
 
