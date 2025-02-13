@@ -6,3 +6,4 @@ REQUIRED_VARS=("GITLAB_HOST")
 
 check_env_vars
 wait_for_gitlab
+gitlab-rake gitlab:env:info
