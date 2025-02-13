@@ -1,4 +1,4 @@
-name: Docker Multi-Build and Push
+name: Build Docker Container (Advanced Mode)
 
 on:
   workflow_dispatch:
@@ -20,17 +20,17 @@ on:
         required: true
         default: 'all'
       containers:
-        description: 'Containers you want to .build'
+        description: 'Containers you want to build'
         required: true
         default: 'gitlab,gitlab-runner'
       platforms:
-        description: 'Platforms you want to .build your containers for'
+        description: 'Platforms you want to build your containers for'
         required: true
-        default: 'linux/amd64'
+        default: 'linux/amd64,linux/arm64'
 
 jobs:
   build-and-push:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout
@@ -79,8 +79,7 @@ jobs:
               echo "Build done for: $container"
             done
           }
-          
-          export START_ENV=dev
+
           if [[ "$DOCKER_IMAGE_SOURCE" == "all" ]]; then
             echo "Building base images"
             BUILD_IMAGES base $BASE_IMAGE_TAG
@@ -101,4 +100,4 @@ jobs:
             BUILD_IMAGES $DOCKER_IMAGE_SOURCE $BUILD_IMAGE_TAG
           fi
 
-          echo "All Containers built, tagged, and pushed to $DOCKER_REPO_USER!"
+          echo "🚀 All Containers built, tagged, and pushed to $DOCKER_REPO_USER!"

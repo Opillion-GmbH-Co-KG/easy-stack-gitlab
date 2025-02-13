@@ -1,4 +1,4 @@
-name: Build and Test
+name: Test Build
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions: write-all
     name: build-and-test
     environment: test
@@ -30,3 +30,4 @@ jobs:
       - name: Build stack
         run: |
           make start
+          echo "🚀 All containers have been successfully built!"
